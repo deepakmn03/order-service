@@ -1,0 +1,117 @@
+{
+  "rules": [
+    {
+      "type": "branch_protection",
+      "name": "Protect Main Branch",
+      "description": "Critical protection rules for the main branch",
+      "target": "branch",
+      "enforcement": "active",
+      "conditions": {
+        "ref_name": {
+          "include": ["main", "master"],
+          "exclude": []
+        }
+      },
+      "rules": {
+        "deletion": {
+          "enabled": true,
+          "description": "Prevent deletion of main branch"
+        },
+        "pull_request": {
+          "enabled": true,
+          "required_approving_review_count": 1,
+          "dismiss_stale_reviews": true,
+          "require_code_owner_review": false,
+          "restrict_merge_roles": ["admin", "maintain"],
+          "description": "Require pull request reviews before merging"
+        },
+        "status_checks": {
+          "enabled": true,
+          "strict": true,
+          "checks": [
+            "build",
+            "test",
+            "lint"
+          ],
+          "description": "Require status checks to pass before merging"
+        },
+        "require_updated_branch": {
+          "enabled": true,
+          "description": "Require branches to be up to date before merging"
+        },
+        "resolved_conversations": {
+          "enabled": true,
+          "description": "Require all conversations to be resolved before merging"
+        },
+        "commit_signatures": {
+          "enabled": false,
+          "description": "Require commits to be signed (optional, set to true for enhanced security)"
+        },
+        "linear_history": {
+          "enabled": false,
+          "description": "Require linear history (optional, set to true if desired)"
+        },
+        "force_push": {
+          "enabled": true,
+          "description": "Prevent force pushes to main branch"
+        }
+      }
+    },
+    {
+      "type": "merge_restrictions",
+      "name": "PR Merge Restrictions",
+      "description": "Control who can merge pull requests",
+      "conditions": {
+        "ref_name": {
+          "include": ["main", "master"]
+        }
+      },
+      "allowed_roles": [
+        "admin",
+        "maintain"
+      ],
+      "merge_restrictions": {
+        "only_admins_can_merge": true,
+        "dismiss_stale_reviews_on_push": true,
+        "require_review_dismissal_after_new_commits": true
+      }
+    }
+  ],
+  "description": "Reusable ruleset configuration for protecting main branch and controlling PR merges",
+  "configuration_notes": {
+    "usage": "This file can be applied to multiple repositories for consistent governance",
+    "location": ".github/rulesets.json or .github/workflows/rulesets.yml",
+    "how_to_apply": "Use GitHub CLI or GitHub API to apply these rules to your repositories"
+  },
+  "recommended_additional_features": {
+    "codeowners": {
+      "enabled": true,
+      "description": "Create a CODEOWNERS file to specify who must review changes to specific files",
+      "file_path": ".github/CODEOWNERS"
+    },
+    "require_signed_commits": {
+      "enabled": false,
+      "description": "Consider enabling for enhanced security - requires developers to sign commits with GPG"
+    },
+    "require_conversation_resolution": {
+      "enabled": true,
+      "description": "All conversations must be resolved before merge"
+    },
+    "require_fresh_reviews": {
+      "enabled": true,
+      "description": "Dismiss approving reviews when new commits are pushed"
+    },
+    "dependabot_security": {
+      "enabled": true,
+      "description": "Enable Dependabot for automated dependency updates and security alerts"
+    }
+  },
+  "implementation_guide": {
+    "step_1": "Create .github/rulesets.json in your repository (this file)",
+    "step_2": "Create .github/CODEOWNERS file to specify code owners",
+    "step_3": "Apply rules via GitHub CLI: gh repo rules create --ruleset-name 'Main Branch Protection'",
+    "step_4": "Configure branch protection rules in GitHub Settings > Branches",
+    "step_5": "Test with a test branch to ensure rules work as expected",
+    "github_cli_example": "gh repo rules create --ruleset-name 'Main Protection' --enforcement active --target branch --include 'main' --deletion-allowed false"
+  }
+}
