@@ -1,7 +1,6 @@
 package com.order.service.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.order.service.entity.Order;
+import com.order.service.dto.OrderRequestDTO;
+import com.order.service.dto.OrderResponseDTO;
 import com.order.service.service.OrderService;
 
 @RestController
@@ -31,26 +31,26 @@ public class OrderController {
     }
 
     @GetMapping("/get/{orderId}")
-    public ResponseEntity<Optional<Order>> getOrder(@PathVariable int orderId){
-        Optional<Order> order = orderService.getOrderByOrderId(orderId);
-        return ResponseEntity.ok(order);
+    public ResponseEntity<OrderResponseDTO> getOrder(@PathVariable int orderId){
+        OrderResponseDTO orderResponseDTO = orderService.getOrderByOrderId(orderId);
+        return ResponseEntity.ok(orderResponseDTO);
     }
 
     @GetMapping("/get/user/{userId}")
-    public ResponseEntity<List<Order>> getAllOrdersByUserId(@PathVariable int userId){
-        List<Order>orders = orderService.getOrdersByUserId(userId);
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<List<OrderResponseDTO>> getAllOrdersByUserId(@PathVariable int userId){
+        List<OrderResponseDTO>orderResponseDTOs = orderService.getOrdersByUserId(userId);
+        return ResponseEntity.ok(orderResponseDTOs);
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<Order>> getAllOrders(){
-        List<Order>orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<List<OrderResponseDTO>> getAllOrders(){
+        List<OrderResponseDTO>orderResponseDTOs = orderService.getAllOrders();
+        return ResponseEntity.ok(orderResponseDTOs);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createOrder(@RequestBody Order order){
-        orderService.creatOrder(order);
+    public ResponseEntity<String> createOrder(@RequestBody OrderRequestDTO createOrderDTO){
+        orderService.creatOrder(createOrderDTO.getOrderValue(), createOrderDTO.getUserId());
         return ResponseEntity.ok("A new order has been created");
     }
 
@@ -60,9 +60,9 @@ public class OrderController {
         return ResponseEntity.ok("Order has been deleted with orderId:  " + orderId);
     }
 
-    @PatchMapping("/update/{orderId}")
-    public ResponseEntity<Order> updateOrder(@PathVariable int orderId, @RequestBody Order order){
-        Order newOrder = orderService.updateOrder(orderId, order);
-        return ResponseEntity.ok(newOrder);
+    @PatchMapping(value = "/update/{orderId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable int orderId, @RequestBody OrderRequestDTO orderRequestDTO){
+        OrderResponseDTO updatedOrder = orderService.updateOrder(orderId, orderRequestDTO);
+        return ResponseEntity.ok(updatedOrder);
     }
 }

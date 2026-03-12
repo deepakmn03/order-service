@@ -2,14 +2,18 @@ package com.order.service.service;
 import com.order.service.repository.OrderRepository;
 import com.order.service.repository.UserRepository;
 
+// import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.order.service.dto.OrderRequestDTO;
+import com.order.service.dto.OrderResponseDTO;
 import com.order.service.entity.Order;
 import com.order.service.entity.User;
+import com.order.service.mapper.OrderMapper;
 
 @Service
 public class OrderService {
@@ -20,43 +24,61 @@ public class OrderService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private OrderMapper orderMapper;
 
-    public List<Order> getOrdersByUserId(Integer userId){
-        return orderRepository.findByUserUserId(userId);
+
+    public List<OrderResponseDTO> getOrdersByUserId(Integer userId){
+        List<Order> orders = orderRepository.findByUserUserId(userId);
+        return orderMapper.toDTOList(orders);
     }
 
-    public Optional<Order> getOrderByOrderId(int orderId){
-        return orderRepository.findById(orderId);
+    public OrderResponseDTO getOrderByOrderId(int orderId){
+        Order order = orderRepository.findById(orderId)
+                      .orElseThrow(() -> new RuntimeException());
+        return orderMapper.toDTO(order);
     }
 
-    public List<Order> getAllOrders(){
-        return orderRepository.findAll();
+    public List<OrderResponseDTO> getAllOrders(){
+        List<Order> orders = orderRepository.findAll();
+        return orderMapper.toDTOList(orders);
     }
 
-    public Order creatOrder(Order order){
-        if(order.getUser() == null || order.getUser().getUserId() <= 0){
-            throw new RuntimeException("Order must be associated with an existing User ID");
+    public OrderResponseDTO creatOrder(Long orderValue, int userId){
+        Optional<User> existingUser = userRepository.findById(userId);
+        if(!existingUser.isPresent()){
+            throw new RuntimeException("User with ID: " + userId + " not found");
         }
-        int userId = order.getUser().getUserId();
-        Optional<User> existinguser = userRepository.findById(userId);
-        User user = existinguser.get();
+        Order order = new Order();
+        order.setOrderValue(orderValue);
+        User user = existingUser.get();
         order.setUser(user);
-        return orderRepository.save(order);
+        user.addOrder(order);
+        Order finalOrder = orderRepository.save(order);
+        return orderMapper.toDTO(finalOrder);
     }
 
-    public Order updateOrder(int orderId, Order orderDetails){
-       Optional<Order>order = orderRepository.findById(orderId);
-       if(order.isPresent()){
-        Order existingOrder = order.get();
-        existingOrder.setOrderValue(orderDetails.getOrderValue());
-        existingOrder.setUser(orderDetails.getUser());
-        return orderRepository.save(existingOrder);
-       }
-       return null;
+    public OrderResponseDTO updateOrder(int orderId, OrderRequestDTO orderDetails){
+       Order order = orderRepository.findById(orderId)
+                     .orElseThrow(() -> new RuntimeException("Order with ID: " + orderId + " not found"));
+        
+        // Update order value
+        order.setOrderValue(orderDetails.getOrderValue());
+        
+        // Update user if userId is provided
+        if(orderDetails.getUserId() > 0){
+            User user = userRepository.findById(orderDetails.getUserId())
+                        .orElseThrow(() -> new RuntimeException("User with ID: " + orderDetails.getUserId() + " not found"));
+            order.setUser(user);
+        }
+        
+        Order updatedOrder = orderRepository.save(order);
+       return orderMapper.toDTO(updatedOrder);
     }
 
-    public void deleteOrder(int orderId){
+    public String deleteOrder(int orderId){
         orderRepository.deleteById(orderId);
+        return "Order with order ID: " + orderId + " has been deleted.";
        }
     
 }

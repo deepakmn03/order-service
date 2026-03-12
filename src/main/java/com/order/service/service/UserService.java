@@ -1,15 +1,20 @@
 package com.order.service.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.order.service.dto.OrderResponseDTO;
+import com.order.service.dto.UserResponseDTO;
 import com.order.service.entity.Order;
 import com.order.service.entity.User;
+import com.order.service.mapper.OrderMapper;
+import com.order.service.mapper.UserMapper;
 import com.order.service.repository.OrderRepository;
 import com.order.service.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -20,12 +25,23 @@ public class UserService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public Optional<User> getUserById(int id){
-        return userRepository.findById(id);
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private OrderMapper orderMapper;
+    
+    @Transactional
+    public UserResponseDTO getUserById(int id){
+        User user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("User is not found!!"));
+        return userMapper.toDTO(user);            
     }
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    @Transactional
+    public List<UserResponseDTO> getAllUsers(){
+        List<User> userList = userRepository.findAll();
+        return userMapper.toDTOList(userList);
     }
 
     public String createUser(User user){
@@ -38,7 +54,8 @@ public class UserService {
         return "User with user id: " + userId + " has been removed";
     }
 
-    public List<Order> getOrdersByUserId(int id){
-        return orderRepository.findAllById(null);
+    public List<OrderResponseDTO> getOrdersByUserId(int id){
+        List<Order> orders = orderRepository.findAllById(null);
+        return orderMapper.toDTOList(orders);
     }
 }

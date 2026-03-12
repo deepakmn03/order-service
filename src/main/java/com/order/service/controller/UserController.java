@@ -1,7 +1,6 @@
 package com.order.service.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.order.service.dto.UserResponseDTO;
+import com.order.service.dto.UserRequestDTO;
 import com.order.service.entity.User;
 import com.order.service.service.UserService;
 
@@ -27,29 +28,32 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/list/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Integer id){
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Integer id){
         try {
-            Optional<User> user = userService.getUserById(id);
-            if(user.isPresent()) {
-                // Force load the orders collection
-                user.get().getOrders().size();
-                return ResponseEntity.ok().body(user.get());
-            }
+            UserResponseDTO userDTO = userService.getUserById(id);
+            return ResponseEntity.ok(userDTO);
+        } catch(RuntimeException e){
             return ResponseEntity.notFound().build();
-        } catch(Exception e) {
+        }
+         catch(Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<User>> getAllUsers(){
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers(){
+        List<UserResponseDTO> userDTOList = userService.getAllUsers();
+        return ResponseEntity.ok(userDTOList);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> addUser(@RequestBody User user){
+    public ResponseEntity<String> addUser(@RequestBody UserRequestDTO createUserDTO){
+        User user = new User();
+        user.setUsername(createUserDTO.getUsername());
+        user.setEmail(createUserDTO.getEmail());
+        user.setPassword(createUserDTO.getPassword());
+        user.setAddress(createUserDTO.getAddress());
         userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("A new user has created.");
     }
