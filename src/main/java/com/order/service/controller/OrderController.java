@@ -17,6 +17,8 @@ import com.order.service.dto.OrderRequestDTO;
 import com.order.service.dto.OrderResponseDTO;
 import com.order.service.service.OrderService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/order")
 public class OrderController {
@@ -49,7 +51,7 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createOrder(@RequestBody OrderRequestDTO createOrderDTO){
+    public ResponseEntity<String> createOrder(@Valid @RequestBody OrderRequestDTO createOrderDTO){
         orderService.creatOrder(createOrderDTO.getOrderValue(), createOrderDTO.getUserId());
         return ResponseEntity.ok("A new order has been created");
     }
@@ -61,7 +63,7 @@ public class OrderController {
     }
 
     @PatchMapping(value = "/update/{orderId}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable int orderId, @RequestBody OrderRequestDTO orderRequestDTO){
+    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable int orderId, @Valid @RequestBody OrderRequestDTO orderRequestDTO){
         OrderResponseDTO updatedOrder = orderService.updateOrder(orderId, orderRequestDTO);
         return ResponseEntity.ok(updatedOrder);
     }

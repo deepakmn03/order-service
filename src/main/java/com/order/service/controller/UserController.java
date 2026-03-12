@@ -13,6 +13,8 @@ import com.order.service.dto.UserRequestDTO;
 import com.order.service.entity.User;
 import com.order.service.service.UserService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> addUser(@RequestBody UserRequestDTO createUserDTO){
+    public ResponseEntity<String> addUser(@Valid @RequestBody UserRequestDTO createUserDTO){
         User user = new User();
         user.setUsername(createUserDTO.getUsername());
         user.setEmail(createUserDTO.getEmail());
