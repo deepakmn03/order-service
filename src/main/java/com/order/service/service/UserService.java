@@ -15,9 +15,11 @@ import com.order.service.repository.OrderRepository;
 import com.order.service.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 
 import com.order.service.exception.UserNotFoundException;
 
+@Log4j2
 @Service
 public class UserService {
 
@@ -48,11 +50,13 @@ public class UserService {
 
     public String createUser(User user){
         userRepository.save(user);
+        log.info("A new user has been created with id: {}", user.getUserId());
         return "User with userId: "+ user.getUserId() + " and name: "  + user.getUsername() + "has been created";
     }
 
     public String deleteUserById(int userId){
         userRepository.deleteById(userId);
+        log.warn("A user with ID: {} has been deleted", userId);
         return "User with user id: " + userId + " has been removed";
     }
 

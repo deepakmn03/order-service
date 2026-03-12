@@ -2,6 +2,8 @@ package com.order.service.service;
 import com.order.service.repository.OrderRepository;
 import com.order.service.repository.UserRepository;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +17,7 @@ import com.order.service.entity.User;
 import com.order.service.exception.OrderNotFoundException;
 import com.order.service.mapper.OrderMapper;
 
+@Log4j2
 @Service
 public class OrderService {
 
@@ -55,6 +58,7 @@ public class OrderService {
         order.setUser(user);
         user.addOrder(order);
         Order finalOrder = orderRepository.save(order);
+        log.info("A new order has been created for user {}", user.getUsername());
         return orderMapper.toDTO(finalOrder);
     }
 
@@ -73,11 +77,13 @@ public class OrderService {
         }
         
         Order updatedOrder = orderRepository.save(order);
+        log.warn("Order has been updated with order ID: {}", orderId);
        return orderMapper.toDTO(updatedOrder);
     }
 
     public String deleteOrder(int orderId){
         orderRepository.deleteById(orderId);
+        log.warn("Order has been removed for order ID: {}", orderId);
         return "Order with order ID: " + orderId + " has been deleted.";
        }
     

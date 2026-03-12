@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -19,6 +22,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request){
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(),error.getDefaultMessage()));
+
+        log.warn("Resource not found: {}", ex.getMessage());
 
         ErrorResponse error = new ErrorResponse(
             LocalDateTime.now(),
@@ -32,6 +37,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
         Map<String, String> errors = new HashMap<>();
         ((BindException) ex).getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(),error.getDefaultMessage()));
+
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 "An internal error occurred",
@@ -43,6 +49,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex){
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(),error.getDefaultMessage()));
+
+        log.error("An unexpected error occured: ", ex);
+        
         ErrorResponse error = new ErrorResponse(
             LocalDateTime.now(),
             "Validation Failed",
