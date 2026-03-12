@@ -14,7 +14,7 @@ spring:
   web:
     error:
       include-message: always
-      include-stacktrace: never  # 'never' for production, 'on_param' for development
+      include-stacktrace: on_param  # Show trace only when ?trace=true parameter is sent
 
 server:
   port: 2330

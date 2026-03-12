@@ -16,6 +16,8 @@ import com.order.service.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+import com.order.service.exception.UserNotFoundException;
+
 @Service
 public class UserService {
 
@@ -34,7 +36,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO getUserById(int id){
         User user = userRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("User is not found!!"));
+                    .orElseThrow(() -> new UserNotFoundException(id));
         return userMapper.toDTO(user);            
     }
 

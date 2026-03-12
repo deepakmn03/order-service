@@ -29,16 +29,8 @@ public class UserController {
 
     @GetMapping("/list/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Integer id){
-        try {
             UserResponseDTO userDTO = userService.getUserById(id);
             return ResponseEntity.ok(userDTO);
-        } catch(RuntimeException e){
-            return ResponseEntity.notFound().build();
-        }
-         catch(Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     @GetMapping("/list")

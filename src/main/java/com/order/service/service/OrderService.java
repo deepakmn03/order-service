@@ -2,7 +2,6 @@ package com.order.service.service;
 import com.order.service.repository.OrderRepository;
 import com.order.service.repository.UserRepository;
 
-// import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +12,7 @@ import com.order.service.dto.OrderRequestDTO;
 import com.order.service.dto.OrderResponseDTO;
 import com.order.service.entity.Order;
 import com.order.service.entity.User;
+import com.order.service.exception.OrderNotFoundException;
 import com.order.service.mapper.OrderMapper;
 
 @Service
@@ -35,7 +35,7 @@ public class OrderService {
 
     public OrderResponseDTO getOrderByOrderId(int orderId){
         Order order = orderRepository.findById(orderId)
-                      .orElseThrow(() -> new RuntimeException());
+                      .orElseThrow(() -> new OrderNotFoundException(orderId));
         return orderMapper.toDTO(order);
     }
 
