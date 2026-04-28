@@ -1,6 +1,6 @@
 # Order Process Service
 
-A minimal Spring Boot microservice for managing users and their orders.
+A minimal Spring Boot microservice for managing users and their orders. 
 
 ## Features
 - **User Management**: Register, list, and delete users.
@@ -30,7 +30,7 @@ A minimal Spring Boot microservice for managing users and their orders.
 - `GET /status`: Check service status.
 - `GET /get`: List all orders.
 - `GET /get/{orderId}`: Get order by ID.
-- `GET /get/user/{userId}`: List all orders for a specific user.
+- `GET /get/user/{userId}`: List all orders for a specific user based on userID.
 - `POST /create`: Create a new order.
 - `PATCH /update/{orderId}`: Update an existing order.
 - `DELETE /remove/{orderId}`: Delete an order.
