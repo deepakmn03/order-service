@@ -48,12 +48,14 @@ public class UserService {
         return userMapper.toDTOList(userList);
     }
 
+    // create user
     public String createUser(User user){
         userRepository.save(user);
         log.info("A new user has been created with id: {}", user.getUserId());
         return "User with userId: "+ user.getUserId() + " and name: "  + user.getUsername() + "has been created";
     }
 
+    // delete user
     public String deleteUserById(int userId){
         userRepository.deleteById(userId);
         log.warn("A user with ID: {} has been deleted", userId);
