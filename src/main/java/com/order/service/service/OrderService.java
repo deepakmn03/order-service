@@ -47,6 +47,7 @@ public class OrderService {
         return orderMapper.toDTOList(orders);
     }
 
+    // create a order for a user with userId
     public OrderResponseDTO creatOrder(Long orderValue, int userId){
         Optional<User> existingUser = userRepository.findById(userId);
         if(!existingUser.isPresent()){
@@ -62,6 +63,7 @@ public class OrderService {
         return orderMapper.toDTO(finalOrder);
     }
 
+    // update orders for a orderId
     public OrderResponseDTO updateOrder(int orderId, OrderRequestDTO orderDetails){
        Order order = orderRepository.findById(orderId)
                      .orElseThrow(() -> new RuntimeException("Order with ID: " + orderId + " not found"));
@@ -81,6 +83,7 @@ public class OrderService {
        return orderMapper.toDTO(updatedOrder);
     }
 
+    // delete order by orderID
     public String deleteOrder(int orderId){
         orderRepository.deleteById(orderId);
         log.warn("Order has been removed for order ID: {}", orderId);
