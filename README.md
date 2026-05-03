@@ -40,3 +40,6 @@ A minimal Spring Boot microservice for managing users and their orders.
 - `GET /list/{id}`: Get user by ID (including orders).
 - `POST /register`: Register a new user.
 - `DELETE /delete/{userId}`: Remove a user.
+
+
+-------------
